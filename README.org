@@ -3,8 +3,6 @@
 #+EMAIL:     ini.kelvin@gmail.com
 #+DATE:      2012-08-23
 
-* Sorry folks, This project is not under active development any more. However, it still can be used if the provided features match your requirement.
-
 * Introduction
 
   Org-page is a static site generator based on [[http://orgmode.org/][org-mode]].
@@ -109,7 +107,7 @@ manually before you run this command.*
     if you deleted some org sources, you may have to manually delete
     corresponding generated html files.
   - URI path change detection is not available. That is, if you make a
-    post with the URI "/blog/2013/03/25/the-old-post-name" and then
+    post with the URI "/article/2013/03/25/the-old-post-name" and then
     change this value in your org source, org-page would be unable to
     detect that this has happened. it will only publish a new html
     file for you so you need to delete the old html file related to
