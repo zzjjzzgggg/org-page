@@ -136,7 +136,7 @@ content of the buffer will be converted into html."
       (setq post-content (op/render-content))
       (setq assets-dir (file-name-as-directory
                         (concat (file-name-as-directory pub-root-dir)
-                                "assets/"
+                                "assets"
                                 (replace-regexp-in-string
                                  "\\`" "" (plist-get attr-plist :uri)))))
       (with-temp-buffer
@@ -155,14 +155,13 @@ content of the buffer will be converted into html."
                          (string-prefix-p "#" asset-path)
                          ;; TODO add more here
                          ))
-            (setq asset-abs-path
-                  (expand-file-name asset-path (file-name-directory filename)))
+            (setq asset-abs-path (expand-file-name asset-path (file-name-directory filename)))
+
             (if (not (file-exists-p asset-abs-path))
-                (message "[WARN] File %s in hyper link does not exist, org \
-file: %s." asset-path filename)
-              (unless (file-directory-p assets-dir)
-                (mkdir assets-dir t))
+                (message "[WARN] File %s in hyper link does not exist, org file: %s." asset-path filename)
+              (unless (file-directory-p assets-dir) (mkdir assets-dir t))
               (copy-file asset-abs-path assets-dir t t t t)
+
               (setq pub-abs-path (concat assets-dir
                                          (file-name-nondirectory asset-path)))
               (unless (string-prefix-p pub-root-dir pub-abs-path)
