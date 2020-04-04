@@ -73,9 +73,9 @@ deleted. PUB-ROOT-DIR is the root publication directory."
                all-list)
         (op/generate-default-index file-attr-list pub-root-dir))
       (unless (member
-               (expand-file-name "about.org" op/repository-directory)
+               (expand-file-name "contact.org" op/repository-directory)
                all-list)
-        (op/generate-default-about pub-root-dir))
+        (op/generate-default-contact pub-root-dir))
       (op/update-category-index file-attr-list pub-root-dir)
       (op/update-rss file-attr-list pub-root-dir)
       (op/update-tags file-attr-list pub-root-dir)
@@ -222,7 +222,7 @@ ORG-FILE is nil. This is the default function used to get a file's category,
 see `op/retrieve-category-function'. How to judge a file's category is based on
 its name and its root folder name under `op/repository-directory'."
   (cond ((not org-file)
-         (let ((cat-list '("index" "about" "article"))) ;; 3 default categories
+         (let ((cat-list '("index" "contact" "article"))) ;; 3 default categories
            (dolist (f (directory-files op/repository-directory))
              (when (and (not (equal f "."))
                         (not (equal f ".."))
@@ -235,8 +235,8 @@ its name and its root folder name under `op/repository-directory'."
            cat-list))
         ((string= (expand-file-name "index.org" op/repository-directory)
                   (expand-file-name org-file)) "index")
-        ((string= (expand-file-name "about.org" op/repository-directory)
-                  (expand-file-name org-file)) "about")
+        ((string= (expand-file-name "contact.org" op/repository-directory)
+                  (expand-file-name org-file)) "contact")
         ((string= (file-name-directory (expand-file-name org-file))
                   op/repository-directory) "article")
         (t (car (split-string (file-relative-name (expand-file-name org-file)
@@ -414,7 +414,7 @@ publication directory."
                                     (cdr cell)))))
                   (cl-remove-if
                    #'(lambda (cell)
-                       (string= (car cell) "about"))
+                       (string= (car cell) "contact"))
                    sort-alist))))))
           ("footer"
            (op/render-footer
@@ -446,10 +446,10 @@ publication directory."
       ("post-thumb"
        (or (plist-get post :thumb) ""))))
 
-(defun op/generate-default-about (pub-base-dir)
-  "Generate default about page, only if about.org does not exist. PUB-BASE-DIR
+(defun op/generate-default-contact (pub-base-dir)
+  "Generate default contact page, only if contact.org does not exist. PUB-BASE-DIR
 is the root publication directory."
-  (let ((pub-dir (expand-file-name "about/" pub-base-dir)))
+  (let ((pub-dir (expand-file-name "contact/" pub-base-dir)))
     (unless (file-directory-p pub-dir)
       (mkdir pub-dir t))
     (string-to-file
@@ -460,12 +460,12 @@ is the root publication directory."
        (file-to-string (concat (op/get-template-dir) "container.mustache")))
       (ht ("header"
            (op/render-header
-            (ht ("page-title" (concat "About - " op/site-main-title))
+            (ht ("page-title" (concat "Contact - " op/site-main-title))
                 ("author" (or user-full-name "Unknown Author")))))
           ("nav" (op/render-navigation-bar))
           ("content"
            (op/render-content
-            "about.mustache"
+            "contact.mustache"
             (ht ("author" (or user-full-name "Unknown Author")))))
           ("footer"
            (op/render-footer
@@ -721,7 +721,7 @@ PUB-BASE-DIR is the root publication directory."
                                            (string= (plist-get it :category)
                                                     "index")
                                            (string= (plist-get it :category)
-                                                    "about")))
+                                                    "contact")))
                                      file-attr-list)))))
     (string-to-file
      (mustache-render

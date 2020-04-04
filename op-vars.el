@@ -159,11 +159,11 @@ default value is `op/get-file-category'."
     :uri-template "/"
     :sort-by :date
     :category-index nil)
-   ("about"
+   ("contact"
     :show-meta nil
     :show-comment nil
     :uri-generator op/generate-uri
-    :uri-template "/about/"
+    :uri-template "/contact/"
     :sort-by :date
     :category-index nil))
   "Configurations for different categories, can and should be customized.")
@@ -177,7 +177,7 @@ default value is `op/get-file-category'."
   (ht ("blog-uri" "/blog/")
       ("wiki-uri" "/wiki/")
       ("tags-uri" "/tags/")
-      ("about-uri" "/about/")
+      ("contact-uri" "/contact/")
       ("site-main-title" op/site-main-title)
       ("site-sub-title" op/site-sub-title)
       ("avatar" op/personal-avatar)

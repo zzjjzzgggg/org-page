@@ -114,7 +114,7 @@ render from a default hash table."
                         (sort (cl-remove-if
                                #'(lambda (cat)
                                    (or (string= cat "index")
-                                       (string= cat "about")))
+                                       (string= cat "contact")))
                                (op/get-file-category nil))
                               'string-lessp)))
                       ("github" op/personal-github-link)
@@ -259,7 +259,7 @@ ATTR-PLIST is the attribute plist of the buffer, retrieved by the combination of
          (keywords (or (plist-get info :keywords) nil))
          (category (plist-get info :category))
          (show-meta-info (and (not (eq category 'index))
-                              (not (eq category 'about))
+                              (not (eq category 'contact))
                               (not (eq category 'none))))
          (creation-date (if (plist-get info :date)
                             (fix-timestamp-string
