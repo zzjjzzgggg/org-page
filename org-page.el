@@ -60,7 +60,7 @@
   "The main entrance of org-page. The entire procedure is:
 1) verify configuration
 2) read changed files on branch `op/repository-org-branch' of repository
-`op/repository-directory', the definition of 'changed files' is:
+`op/repository-directory', the definition of `changed files' is:
    1. if FORCE-ALL is non-nil, then all files will be published
    2. if FORCE-ALL is nil, the changed files will be obtained based on
 BASE-GIT-COMMIT
@@ -78,7 +78,7 @@ then the branch `op/repository-html-branch' will be pushed to remote repo."
    (let* ((f (y-or-n-p "Publish all org files? "))
           (b (unless f (read-string "Base git commit: " "HEAD~1")))
           (p (when (y-or-n-p
-                    "Publish to a directory? (to original repo if not) ")
+                    "Publish to a directory (to original repo if not)? ")
                (read-directory-name "Publication directory: ")))
           (a (when (not p)
                (y-or-n-p "Auto commit to repo? ")))
@@ -174,14 +174,14 @@ perfectly manipulated by org-page."
 `op/highlight-render': [optional](default 'js)"
   (unless (and op/repository-directory
                (file-directory-p op/repository-directory))
-    (error "Directory `%s' is not properly configured."
+    (error "Directory `%s' is not properly configured"
            (symbol-name 'op/repository-directory)))
   (unless (file-directory-p (op/get-theme-dir))
     (error "Org-page cannot detect theme directory `%s' automatically, please \
-help configure it manually, usually it should be <org-page directory>/themes/."
+help configure it manually, usually it should be <org-page directory>/themes/"
            (symbol-name 'op/theme)))
   (unless op/site-domain
-    (error "Site domain `%s' is not properly configured."
+    (error "Site domain `%s' is not properly configured"
            (symbol-name 'op/site-domain)))
 
   (setq op/repository-directory (expand-file-name op/repository-directory))
@@ -269,11 +269,9 @@ month and day): " (unless (string= i "")
            (if (string= title "") (buffer-name) title)
            (user-full-name)
            user-mail-address
-           (format-time-string (substring (car org-time-stamp-formats) 1 -1))
+           (format-time-string (substring (org-time-stamp-format) 1 -1))
            (if (string= uri "") "<TODO: insert your uri here>" uri)
-           (if (string= keywords "")
-               "<TODO: insert your keywords here>"
-             keywords)
+           (if (string= keywords "") "<TODO: insert your keywords here>" keywords)
            (if (string= tags "") "<TODO: insert your tags here>" tags)
            org-export-default-language
            org-export-headline-levels
@@ -315,7 +313,7 @@ responsibility to guarantee the two parameters are valid."
          (path (concat dir filename)))
     (op/git-change-branch op/repository-directory op/repository-org-branch)
     (if (file-exists-p path)
-        (error "Post `%s' already exists." path))
+        (error "Post `%s' already exists" path))
     (unless (file-directory-p dir)
       (mkdir dir t))
     (switch-to-buffer (find-file path))
@@ -338,8 +336,7 @@ When invoked without prefix argument then PATH defaults to
        (list op/site-preview-directory)))
   (op/do-publication t nil path)
   (httpd-serve-directory path)
-  (browse-url (format "http://%s:%d" system-name httpd-port)))
-
+  (browse-url (format "http://%s:%d" (system-name) httpd-port)))
 
 (provide 'org-page)
 

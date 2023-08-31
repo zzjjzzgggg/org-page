@@ -1,6 +1,4 @@
-(define-package
-  "org-page" "0.5"
-  "a static site generator based on org mode"
+(define-package "org-page" "20200404.160852" "a static site generator based on org mode"
   '((ht "1.5")
     (simple-httpd "1.4.6")
     (mustache "0.22")
@@ -9,3 +7,6 @@
     (dash "2.0.0")
     (cl-lib "0.5")
     (git "0.1.1")))
+;; Local Variables:
+;; no-byte-compile: t
+;; End:

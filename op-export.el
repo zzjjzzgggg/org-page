@@ -53,7 +53,7 @@ deleted. PUB-ROOT-DIR is the root publication directory."
        #'(lambda (org-file)
            (with-temp-buffer
              (insert-file-contents org-file)
-             (beginning-of-buffer)
+             (goto-char (point-min))
              ;; somewhere need `buffer-file-name',make them happy
              (setq buffer-file-name org-file)
              (setq attr-cell (op/get-org-file-options
@@ -141,7 +141,7 @@ content of the buffer will be converted into html."
                                  "\\`" "" (plist-get attr-plist :uri)))))
       (with-temp-buffer
         (insert post-content)
-        (beginning-of-buffer)
+        (goto-char (point-min))
         (while (re-search-forward
                 ;;; TODO: not only links need to convert, but also inline
                 ;;; images, may add others later
@@ -180,17 +180,6 @@ ancestor directory of assets directory %s." pub-root-dir assets-dir))
                                              post-content)))
     (cons attr-plist component-table)))
 
-(defun op/read-org-option (option)
-  "Read option value of org file opened in current buffer.
-e.g:
-#+TITLE: this is title
-will return \"this is title\" if OPTION is \"TITLE\""
-  (let ((match-regexp (org-make-options-regexp `(,option))))
-    (save-excursion
-      (goto-char (point-min))
-      (when (re-search-forward match-regexp nil t)
-        (match-string-no-properties 2 nil)))))
-
 (defun op/generate-uri (default-uri-template creation-date title)
   "Generate URI of org file opened in current buffer. It will be firstly created
 by #+URI option, if it is nil, DEFAULT-URI-TEMPLATE will be used to generate the
@@ -214,34 +203,6 @@ can contain following parameters:
                                 (?d . ,(cl-caddr date-list))
                                 (?f . ,html-file-name)
                                 (?t . ,encoded-title)))))
-
-
-(defun op/get-file-category (org-file)
-  "Get org file category presented by ORG-FILE, return all categories if
-ORG-FILE is nil. This is the default function used to get a file's category,
-see `op/retrieve-category-function'. How to judge a file's category is based on
-its name and its root folder name under `op/repository-directory'."
-  (cond ((not org-file)
-         (let ((cat-list '("index" "contact" "article"))) ;; 3 default categories
-           (dolist (f (directory-files op/repository-directory))
-             (when (and (not (equal f "."))
-                        (not (equal f ".."))
-                        (not (equal f ".git"))
-                        (not (member f op/category-ignore-list))
-                        (not (equal f "article"))
-                        (file-directory-p
-                         (expand-file-name f op/repository-directory)))
-               (setq cat-list (cons f cat-list))))
-           cat-list))
-        ((string= (expand-file-name "index.org" op/repository-directory)
-                  (expand-file-name org-file)) "index")
-        ((string= (expand-file-name "contact.org" op/repository-directory)
-                  (expand-file-name org-file)) "contact")
-        ((string= (file-name-directory (expand-file-name org-file))
-                  op/repository-directory) "article")
-        (t (car (split-string (file-relative-name (expand-file-name org-file)
-                                                  op/repository-directory)
-                              "[/\\\\]+")))))
 
 (defun op/publish-modified-file (component-table pub-dir)
   "Publish org file opened in current buffer. COMPONENT-TABLE is the hash table
@@ -268,7 +229,7 @@ If COMPONENT-TABLE is nil, the publication will be skipped."
   "Rearrange and sort attribute property lists from FILE-ATTR-LIST. Rearrange
 according to category, and sort according to :sort-by property defined in
 `op/category-config-alist', if category is not in `op/category-config-alist',
-the default 'article' category will be used. For sorting, later lies headmost."
+the default `article' category will be used. For sorting, later lies headmost."
   (let (cat-alist cat-list)
     (mapc
      #'(lambda (plist)
@@ -480,10 +441,6 @@ is the root publication directory."
                 ("email" (confound-email (or user-mail-address
                                              "Unknown Email"))))))))
      (concat pub-dir "index.html") 'html-mode)))
-
-(defun op/generate-tag-uri (tag-name)
-  "Generate tag uri based on TAG-NAME."
-  (concat "/tags/" (encode-string-to-url tag-name) "/"))
 
 (defun op/update-tags (file-attr-list pub-base-dir)
   "Update tag pages. FILE-ATTR-LIST is the list of all file attribute property
