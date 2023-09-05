@@ -336,7 +336,7 @@ When invoked without prefix argument then PATH defaults to
        (list op/site-preview-directory)))
   (op/do-publication t nil path)
   (httpd-serve-directory path)
-  (browse-url (format "http://%s:%d" (system-name) httpd-port)))
+  (browse-url (format "http://localhost:%d" httpd-port)))
 
 (provide 'org-page)
 
