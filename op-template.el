@@ -55,13 +55,13 @@ ORG-FILE is nil. This is the default function used to get a file's category,
 see `op/retrieve-category-function'. How to judge a file's category is based on
 its name and its root folder name under `op/repository-directory'."
   (cond ((not org-file)
-         (let ((cat-list '("index" "about" "blog"))) ;; 3 default categories
+         (let ((cat-list '("index" "about" "article"))) ;; 3 default categories
            (dolist (f (directory-files op/repository-directory))
              (when (and (not (equal f "."))
                         (not (equal f ".."))
                         (not (equal f ".git"))
                         (not (member f op/category-ignore-list))
-                        (not (equal f "blog"))
+                        (not (equal f "article"))
                         (file-directory-p
                          (expand-file-name f op/repository-directory)))
                (setq cat-list (cons f cat-list))))
@@ -71,7 +71,7 @@ its name and its root folder name under `op/repository-directory'."
         ((string= (expand-file-name "about.org" op/repository-directory)
                   (expand-file-name org-file)) "about")
         ((string= (file-name-directory (expand-file-name org-file))
-                  op/repository-directory) "blog")
+                  op/repository-directory) "article")
         (t (car (split-string (file-relative-name (expand-file-name org-file)
                                                   op/repository-directory)
                               "[/\\\\]+")))))

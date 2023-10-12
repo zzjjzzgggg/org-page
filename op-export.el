@@ -45,9 +45,11 @@
 ALL-LIST contains paths of all org files, CHANGE-PLIST contains two properties,
 one is :update for files to be updated, another is :delete for files to be
 deleted. PUB-ROOT-DIR is the root publication directory."
+
   (let* ((upd-list (plist-get change-plist :update))
          (del-list (plist-get change-plist :delete))
          attr-cell file-attr-list)
+
     (when (or upd-list del-list)
       (mapc
        #'(lambda (org-file)
@@ -102,7 +104,7 @@ content of the buffer will be converted into html."
                                                 (nth 5 (file-attributes filename)))))
                               :thumb ,(op/read-org-option "THUMBNAIL")))
          assets-dir post-content
-         asset-path asset-abs-path pub-abs-path converted-path
+         asset-path asset-path-no-ext asset-abs-path pub-abs-path converted-path
          component-table tags category cat-config)
     (setq tags (op/read-org-option "TAGS"))
     (when tags
@@ -148,6 +150,7 @@ content of the buffer will be converted into html."
                 ;; "<a[^>]+href=\"\\([^\"]+\\)\"[^>]*>\\([^<]*\\)</a>" nil t)
                 "<[a-zA-Z]+[^/>]+\\(src\\|href\\|data\\)=\"\\([^\"]+\\)\"[^>]*>" nil t)
           (setq asset-path (match-string 2))
+
           (when (not (or (string-prefix-p "http://" asset-path)
                          (string-prefix-p "https://" asset-path)
                          (string-prefix-p "mailto:" asset-path)
@@ -155,6 +158,14 @@ content of the buffer will be converted into html."
                          (string-prefix-p "#" asset-path)
                          ;; TODO add more here
                          ))
+
+            ;; change <a href="article/lab_intro.html"> to <a href="article/lab_intro">
+            (when (string-suffix-p ".html" asset-path)
+              (setq asset-path-no-ext (substring asset-path 0 -5))
+              (setq post-content
+                    (replace-regexp-in-string
+                     (regexp-quote asset-path) asset-path-no-ext post-content)))
+
             (setq asset-abs-path (expand-file-name asset-path (file-name-directory filename)))
 
             (if (not (file-exists-p asset-abs-path))
@@ -162,8 +173,7 @@ content of the buffer will be converted into html."
               (unless (file-directory-p assets-dir) (mkdir assets-dir t))
               (copy-file asset-abs-path assets-dir t t t t)
 
-              (setq pub-abs-path (concat assets-dir
-                                         (file-name-nondirectory asset-path)))
+              (setq pub-abs-path (concat assets-dir (file-name-nondirectory asset-path)))
               (unless (string-prefix-p pub-root-dir pub-abs-path)
                 (message "[WARN] The publication root directory %s is not an \
 ancestor directory of assets directory %s." pub-root-dir assets-dir))
@@ -172,6 +182,8 @@ ancestor directory of assets directory %s." pub-root-dir assets-dir))
               (setq post-content
                     (replace-regexp-in-string
                      (regexp-quote asset-path) converted-path post-content))))))
+
+
       (setq component-table (ht ("header" (op/render-header))
                                 ("nav" (op/render-navigation-bar))
                                 ("content" post-content)
@@ -211,6 +223,7 @@ If COMPONENT-TABLE is nil, the publication will be skipped."
   (when component-table
     (unless (file-directory-p pub-dir)
       (mkdir pub-dir t))
+
     (string-to-file (mustache-render
                      (op/get-cache-create
                       :container-template

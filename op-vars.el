@@ -174,7 +174,7 @@ default value is `op/get-file-category'."
 
 ;;; this variable is deprecated
 (defvar op/default-template-parameters
-  (ht ("blog-uri" "/blog/")
+  (ht ("blog-uri" "/article/")
       ("wiki-uri" "/wiki/")
       ("tags-uri" "/tags/")
       ("contact-uri" "/contact/")
