@@ -117,21 +117,17 @@ then the branch `op/repository-html-branch' will be pushed to remote repo."
       (copy-directory store-dir op/repository-directory t t t)
       (delete-directory store-dir t))
     (when (and to-repo auto-commit)
-      (op/git-commit-changes op/repository-directory "Update published html \
-files, committed by org-page.")
+      (op/git-commit-changes op/repository-directory "Update published html files.")
       (when auto-push
         (setq remote-repos (op/git-remote-name op/repository-directory))
         (if (not remote-repos)
             (message "No valid remote repository found.")
           (let (repo)
             (if (> (length remote-repos) 1)
-                (setq repo (read-string
-                            (format "Which repo to push %s: "
-                                    (prin1-to-string remote-repos))
-                            (car remote-repos)))
-              (setq repo (car remote-repos)))
-            (if (not (member repo remote-repos))
-                (message "Invalid remote repository '%s'." repo)
+                (dolist (repo remote-repos)
+                  (op/git-push-remote op/repository-directory
+                                      repo
+                                      op/repository-html-branch))
               (op/git-push-remote op/repository-directory
                                   repo
                                   op/repository-html-branch)))))
