@@ -286,8 +286,8 @@ month and day): " (unless (string= i "")
                "<TODO: insert your description here>"
              description))))
 
-(defun op/new-post (&optional category filename)
-  "Setup a new post.
+(defun op/new-article (&optional category filename)
+  "Create a new article.
 
 CATEGORY: this post belongs to
 FILENAME: the file name of this post
@@ -296,12 +296,12 @@ Note that this function does not verify the category and filename, it is users'
 responsibility to guarantee the two parameters are valid."
   (interactive
    (let* ((c (read-string "Category: " "article"))
-          (f (read-string "filename: " "new-post.org")))
+          (f (read-string "filename: " "new-article.org")))
      (list c f)))
   (if (string= category "")
       (setq category "article"))
   (if (string= filename "")
-      (setq filename "new-post.org"))
+      (setq filename "new-article.org"))
   (unless (string-suffix-p ".org" filename)
     (setq filename (concat filename ".org")))
   (let* ((dir (concat (file-name-as-directory op/repository-directory)
@@ -329,7 +329,7 @@ When invoked without prefix argument then PATH defaults to
   (interactive
    (if current-prefix-arg
        (list (read-directory-name "Path: "))
-       (list op/site-preview-directory)))
+     (list op/site-preview-directory)))
   (op/do-publication t nil path)
   (httpd-serve-directory path)
   (browse-url (format "http://localhost:%d" httpd-port)))
